@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.order.UserOrderProductDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.order.UserOrderProduct" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="user_id" property="userId" />
+		<result column="order_id" property="orderId"  />
+		<result column="product_id" property="productId"  />
+		<result column="order_num" property="orderNum"  />
+		<result column="product_remark" property="productRemark"  />
+		<result column="product_name" property="productName"  />
+		<result column="product_price" property="productPrice"  />
+		<result column="product_integral" property="productIntegral"  />
+		<result column="integral_price" property="integralPrice"  />
+		<result column="category_name" property="categoryName"  />
+		<result column="coupon_id" property="couponId"  />
+		<result column="coupon_price" property="couponPrice"  />
+		<result column="product_image" property="productImage"  />
+		<result column="product_num" property="productNum"  />
+		<result column="product_type" property="productType"  />
+		<result column="real_price" property="realPrice"  />
+
+	</resultMap>
+
+	<sql id="table_name">user_order_product</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		user_id,
+		order_id ,
+		product_id ,
+		order_num,
+		product_remark,
+		product_name,
+		product_integral,
+		integral_price,
+		product_price,
+		category_name,
+		coupon_id,
+		coupon_price,
+		product_image,
+		product_num,
+		product_type,
+		real_price
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="AND">
+				<if test="orderId != null and orderId!='' "> AND order_id = #{orderId}</if>
+				<if test="productId != null and productId!='' "> AND product_id = #{productId}</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null and ccEnd != 0">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+	<select id="selectByOrderIds" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			order_id IN <foreach collection="list" item="id" open="(" separator="," close=")"> #{id} </foreach>
+		</where>
+	</select>
+
+
+	<insert id="insert" parameterType="com.ixinhoo.shopping.entity.order.UserOrderProduct">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		user_id,
+		order_id ,
+		product_id ,
+		order_num,
+		product_remark,
+		product_name,
+		product_integral,
+		integral_price,
+		product_price,
+		category_name,
+		coupon_id,
+		coupon_price,
+		product_image,
+		product_num,
+		product_type,
+		real_price
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{userId},
+		#{orderId},
+		#{productId},
+		#{orderNum},
+		#{productRemark},
+		#{productName},
+		#{productIntegral},
+		#{integralPrice},
+		#{productPrice},
+		#{categoryName},
+		#{couponId},
+		#{couponPrice},
+		#{productImage},
+		#{productNum},
+		#{productType},
+		#{realPrice}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.order.UserOrderProduct">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			user_id = #{userId},
+			order_id = #{orderId},
+			product_id = #{productId},
+			order_num = #{orderNum},
+			product_remark = #{productRemark},
+			product_name = #{productName},
+			product_integral = #{productIntegral},
+			integral_price = #{integralPrice},
+			product_price = #{productPrice},
+			category_name = #{categoryName},
+			coupon_id = #{couponId},
+			coupon_price = #{couponPrice},
+			product_image = #{productImage},
+			product_num = #{productNum},
+			product_type = #{productType},
+			real_price = #{realPrice}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

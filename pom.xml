@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.ixinhoo</groupId>
+    <artifactId>shopping-light</artifactId>
+    <version>1.0.0-beta</version>
+    <packaging>jar</packaging>
+    <name>shopping :: light</name>
+
+  <build>
+  <!-- 打成jar包的名称 -->
+  <finalName>shopping-free</finalName>
+  <plugins>
+          <!-- 需要引用的jar包 -->
+      <plugin> 
+          <groupId>org.springframework.boot</groupId> 
+          <artifactId>spring-boot-maven-plugin</artifactId> 
+            </plugin> 
+   </plugins>
+    <!-- <finalName>gateway</finalName> -->
+  </build>
+  
+  
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.9.RELEASE</version>
+    </parent>
+
+    <properties>
+        <start-class>com.ixinhoo.Application</start-class>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <shiro.version>1.2.3</shiro.version>
+        <ehcache.version>2.6.9</ehcache.version>
+        <slf4j-log4j12-version>1.6.6</slf4j-log4j12-version>
+		<log4j-version>1.2.16</log4j-version>
+        <mybatis.version>3.2.7</mybatis.version>
+        <mybatis-spring.version>1.2.2</mybatis-spring.version>
+        <guava.version>18.0</guava.version>
+        <light.version>1.0.0-beta</light.version>
+        <light.api.version>1.0.3-beta</light.api.version>
+        <light.code.version>1.0.3-beta</light.code.version>
+        <light.file.version>1.0.3-beta</light.file.version>
+    </properties>
+    <repositories>
+        <repository>
+            <id>cici</id>
+            <name>The Common Maven Repository</name>
+            <url>http://nexus.ixinhoo.com:8081/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>cici</id>
+            <name>The Common Maven Repository</name>
+            <url>http://nexus.ixinhoo.com:8081/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    <dependencies>
+	<dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+	<dependency>
+            <groupId>com.ixinhoo</groupId>
+            <artifactId>shopping-code</artifactId>
+            <version>${light.code.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ixinhoo</groupId>
+            <artifactId>shopping-api</artifactId>
+            <version>${light.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ixinhoo</groupId>
+            <artifactId>shopping-file</artifactId>
+            <version>${light.file.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-ehcache</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+
+        <!--db-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <!--mybatis-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>${mybatis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>${mybatis-spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.6</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+        <dependency>
+			  <groupId>javax.persistence</groupId>
+			  <artifactId>persistence-api</artifactId>
+			  <version>1.0</version>
+       </dependency>
+      <!-- mapper -->
+     <dependency>  
+	    <groupId>tk.mybatis</groupId>  
+	    <artifactId>mapper</artifactId>  
+	    <version>3.5.0</version>  
+     </dependency>
+     
+   <dependency>
+	   	<groupId>dom4j</groupId>
+	   	<artifactId>dom4j</artifactId>
+	</dependency>
+   <dependency>
+   	<groupId>com.thoughtworks.xstream</groupId>
+   	<artifactId>xstream</artifactId>
+   	<version>1.4.9</version>
+   </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.user.UserAddressDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.user.UserAddress" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="user_id" property="userId" />
+		<result column="province" property="province"  />
+		<result column="city" property="city"  />
+		<result column="area" property="area"  />
+		<result column="address" property="address"  />
+		<result column="post_code" property="postCode"  />
+		<result column="name" property="name"  />
+		<result column="phone" property="phone"  />
+		<result column="is_default" property="isDefault" />
+		<result column="longitude" property="longitude" />
+		<result column="latitude" property="latitude" />
+	</resultMap>
+
+	<sql id="table_name">user_address</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		user_id,
+		province ,
+		city ,
+		area ,
+		address ,
+		post_code ,
+		name ,
+		phone ,
+		is_default,
+		latitude,
+		longitude
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="province != null and province !=''"> AND province = #{province}</if>
+				<if test="city != null and city !='' ">AND phone = #{city}</if>
+				<if test="area != null and area !='' ">AND area = #{area}</if>
+
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+	<select id="selectByUserId" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			user_id = #{userId}
+		</where>
+	</select>
+
+	<select id="selectByUserIdAndDefault" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			user_id = #{userId} AND is_default=#{isDefault}
+		</where>
+	</select>
+
+	<insert id="insert" parameterType="com.ixinhoo.shopping.entity.user.UserAddress">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		user_id,
+		province ,
+		city ,
+		area ,
+		address ,
+		post_code ,
+		name ,
+		phone ,
+		is_default,
+		latitude,
+		longitude
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{userId},
+		#{province},
+		#{city},
+		#{area},
+		#{address},
+		#{postCode},
+		#{name},
+		#{phone},
+		#{isDefault},
+		#{latitude},
+		#{longitude},
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.user.UserAddress">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			user_id = #{userId},
+			province = #{province},
+			city = #{city},
+			area = #{area},
+			address = #{address},
+			post_code = #{postCode},
+			name = #{name},
+			phone = #{phone},
+			is_default = #{isDefault},
+			latitude = #{latitude},
+			longitude = #{longitude}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+	<update id="updateDefault" >
+		UPDATE <include refid="table_name" />
+		<set>
+			is_default = #{isDefault}
+		</set>
+		<if test="id != null and id !=''">
+			<where>
+				id = #{id}
+			</where>
+		</if>
+	</update>
+
+
+
+</mapper>

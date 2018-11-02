@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.store.ProductDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.store.Product" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="name" property="name" />
+		<result column="remark" property="remark"  />
+		<result column="integral" property="integral"  />
+		<result column="price" property="price"  />
+		<result column="detail" property="detail"  />
+		<result column="parameter" property="parameter"  />
+		<result column="jd_link" property="jdLink"  />
+		<result column="collect_count" property="collectCount"  />
+		<result column="buy_count" property="buyCount"  />
+		<result column="convert_integral" property="convertIntegral"  />
+		<result column="image" property="image"  />
+		<result column="type" property="type"  />
+		<result column="status" property="status"  />
+		<result column="classify_id" property="classifyId"  />
+		<result column="coupon_id" property="couponId"  />
+	</resultMap>
+
+	<resultMap id="productBeanMap" extends="beanMap" type="com.ixinhoo.shopping.entity.store.Product" >
+		<collection property="banners"
+					ofType="com.ixinhoo.shopping.entity.store.ProductBanner"
+					javaType="list" resultMap="bannerBeanMap">
+		</collection>
+	</resultMap>
+
+	<resultMap id="bannerBeanMap" type="com.ixinhoo.shopping.entity.store.ProductBanner" >
+		<id column="bannerId" property="id" />
+		<result column="bannerSort" property="sort" />
+		<result column="bannerAddress" property="address"  />
+		<result column="productId" property="productId"  />
+	</resultMap>
+
+
+	<sql id="table_name">product</sql>
+
+	<sql id="banner_table_name">product_banner</sql>
+
+	<sql id="category_table_name">product_category</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		name,
+		remark,
+		integral,
+		price,
+		detail,
+		parameter,
+		jd_link,
+		collect_count,
+		buy_count,
+		convert_integral,
+		image,
+		type,
+		status,
+		classify_id,
+		coupon_id
+	</sql>
+
+	<sql id="banner_base_column_list" >
+		a.id ,
+		a.name,
+		a.remark,
+		a.integral,
+		a.price,
+		a.detail,
+		a.parameter,
+		a.jd_link,
+		a.collect_count,
+		a.buy_count,
+		a.convert_integral,
+		a.image,
+		a.type,
+		a.status,
+		a.classify_id,
+		a.coupon_id,
+		b.id AS bannerId,
+		b.product_id AS productId,
+		b.sort AS bannerSort,
+		b.address AS bannerAddress
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="AND">
+				<if test="type != null and type !=''"> AND type = #{type}</if>
+				<if test="name != null and name !=''"> AND name = #{name}</if>
+				<if test="classifyId != null and classifyId !=''"> AND classify_id = #{classifyId}</if>
+				<!-- 模糊查询 -->
+				<if test="nameLike != null and nameLike!=''">AND name LIKE CONCAT("%",#{nameLike},"%")</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectByClassifyId" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectProduct" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			<trim prefixOverrides="AND">
+				<if test="type != null and type !=''"> AND type = #{type}</if>
+				<if test="name != null and name !=''"> AND name = #{name}</if>
+				<if test="classifyId != null and classifyId !=''"> AND classify_id = #{classifyId}</if>
+				<!-- 模糊查询 -->
+				<if test="nameLike != null and nameLike!=''">AND name LIKE CONCAT("%",#{nameLike},"%")</if>
+				<if test="beginIntegral != null ">
+					AND convert_integral>=#{beginIntegral}
+				</if>
+				<if test="endIntegral != null and endIntegral!=0">
+					<![CDATA[
+					AND convert_integral<=#{endIntegral}
+					]]>
+				</if>
+				<if test="category != null and category.size()!=0">
+					AND id IN
+					(SELECT product_id FROM  <include refid="category_table_name" />
+					WHERE
+						<trim prefixOverrides="OR">
+						<foreach collection="category" item="name" >
+							OR name LIKE  CONCAT("%",#{name},"%")
+						</foreach>
+						</trim>
+					)
+				</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY  ${ccField}  ${ccSort}
+		</if>
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</select>
+
+	<select id="findProductAndBannerById" resultMap="productBeanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="banner_base_column_list" />
+		FROM <include refid="table_name" /> AS a LEFT JOIN <include refid="banner_table_name" /> AS b
+		ON a.id = b.product_id
+		<where>
+			a.id =${id} ORDER BY b.sort ASC
+		</where>
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT COUNT(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+	<select id="selectByIds"  resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id IN <foreach collection="ids" item="id" open="(" separator="," close=")"> #{id} </foreach>
+		</where>
+	</select>
+
+
+
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.ixinhoo.shopping.entity.store.Product">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		name,
+		remark,
+		integral,
+		price,
+		detail,
+		parameter,
+		jd_link,
+		collect_count,
+		buy_count,
+		convert_integral,
+		image,
+		type,
+		status,
+		classify_id,
+		coupon_id
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{name},
+		#{remark},
+		#{integral},
+		#{price},
+		#{detail},
+		#{parameter},
+		#{jdLink},
+		#{collectCount},
+		#{buyCount},
+		#{convertIntegral},
+		#{image},
+		#{type},
+		#{status},
+		#{classifyId},
+		#{couponId}
+		)
+	</insert>
+
+	<insert id="insertBanner" parameterType="com.ixinhoo.shopping.entity.store.ProductBanner">
+		INSERT INTO <include refid="banner_table_name" />(
+		id,
+		address,
+		product_id,
+		sort
+		)
+		VALUES (
+		#{id},
+		#{address},
+		#{productId},
+		#{sort}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+
+	<delete id="deleteBannerByProductId" >
+		DELETE FROM <include refid="banner_table_name" />
+		<where>
+			product_id = #{productId}
+		</where>
+	</delete>
+
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.store.Product">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			name = #{name},
+			remark = #{remark},
+			integral = #{integral},
+			price = #{price},
+			detail = #{detail},
+			parameter = #{parameter},
+			jd_link = #{jdLink},
+			collect_count = #{collectCount},
+			buy_count = #{buyCount},
+			convert_integral = #{convertIntegral},
+			image = #{image},
+			type = #{type},
+			status = #{status},
+			classify_id = #{classifyId},
+			coupon_id = #{couponId}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+	<update id="updateStatusByIds" >
+		UPDATE <include refid="table_name" />
+		<set>
+			status = #{status}
+		</set>
+		<where>
+			id IN <foreach collection="ids" item="id" open="(" separator="," close=")"> #{id} </foreach>
+		</where>
+	</update>
+
+
+
+</mapper>

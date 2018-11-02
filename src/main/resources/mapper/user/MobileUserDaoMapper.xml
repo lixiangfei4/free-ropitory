@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.user.MobileUserDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.user.MobileUser" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="phone" property="phone" />
+		<result column="status" property="status"  />
+		<result column="openid" property="openid" />
+		<result column="salt" property="salt"  />
+		<result column="nick_name" property="nickName" />
+		<result column="password" property="password" />
+		<result column="image" property="image" />
+		<result column="sign_day" property="signDay" />
+		<result column="integral" property="integral" />
+		<result column="grade_name" property="gradeName" />
+		<result column="grade_id" property="gradeId" />
+
+
+	</resultMap>
+
+	<sql id="table_name">mobile_user</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		phone,
+		status ,
+		openid ,
+		salt,
+		nick_name,
+		password,
+		image,
+		sign_day,
+		integral,
+		experience,
+		grade_name,
+		grade_id
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="status != null and status !=''"> AND status = #{status}</if>
+				<if test="phone != null and phone !='' ">AND phone = #{phone}</if>
+
+				<!-- 模糊查询 -->
+				<if test="phoneLike != null and phoneLike!=''">AND phone LIKE CONCAT("%",#{phoneLike},"%")</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY  ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+	<select id="selectByIds" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id IN <foreach collection="ids" item="id" open="(" separator="," close=")"> #{id} </foreach>
+		</where>
+	</select>
+	<select id="selectByPhone" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			phone = #{phone}
+		</where>
+	</select>
+
+	<select id="selectByOpenid" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			openid = #{openid}
+		</where>
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.ixinhoo.shopping.entity.user.MobileUser">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		phone,
+		status ,
+		openid ,
+		salt,
+		nick_name,
+		password,
+		image,
+		sign_day,
+		integral,
+		experience,
+		grade_name,
+		grade_id
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{phone},
+		#{status},
+		#{openid},
+		#{salt},
+		#{nickName},
+		#{password},
+		#{image},
+		#{signDay},
+		#{integral},
+		#{experience},
+		#{gradeName},
+		#{gradeId}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.user.MobileUser">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			phone = #{phone},
+			status = #{status},
+			openid = #{openid},
+			salt = #{salt},
+			nick_name = #{nickName},
+			password = #{password},
+			image = #{image},
+			sign_day = #{signDay},
+			integral = #{integral},
+			experience = #{experience},
+			grade_name = #{gradeName},
+			grade_id = #{gradeId}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

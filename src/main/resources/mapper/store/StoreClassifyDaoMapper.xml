@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.store.StoreClassifyDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.store.StoreClassify" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="name" property="name" />
+		<result column="sort" property="sort"  />
+
+	</resultMap>
+
+	<sql id="table_name">classify</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		name,
+		sort
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name != null and name !=''"> AND name = #{name}</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY  ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+
+
+	<insert id="insert" parameterType="com.ixinhoo.shopping.entity.store.StoreClassify">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		name,
+		sort
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{name},
+		#{sort}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.store.StoreClassify">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			name = #{name},
+			sort = #{sort}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

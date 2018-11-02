@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.system.SystemUserDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.system.SystemUser" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="login_name" property="loginName" />
+		<result column="account" property="account" />
+		<result column="password" property="password"  />
+		<result column="salt" property="salt"  />
+		<result column="name" property="name" />
+		<result column="role_id" property="roleId" />
+		<result column="store_id" property="storeId" />
+
+	</resultMap>
+
+	<sql id="table_name">system_user</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		update_time,
+		login_name ,
+		password ,
+		salt,
+		name ,
+		status ,
+		role_id,
+		store_id
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="status != null and status !=''"> AND status = #{status}</if>
+				<if test="loginName != null and loginName !='' ">AND login_name = #{loginName}</if>
+
+				<!-- 模糊查询 -->
+				<if test="nameLike != null and nameLike!=''">AND name LIKE CONCAT("%",#{nameLike},"%")</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY  ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT COUNT(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+	<select id="selectByLoginName" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			login_name = #{loginName}
+		</where>
+	</select>
+	<select id="selectByStoreAndRoleId" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			store_id = #{storeId}
+			OR (store_id IS NULL AND role_id=#{roleId})
+		</where>
+	</select>
+
+	<insert id="insert" parameterType="com.ixinhoo.shopping.entity.system.SystemUser">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		password,
+		salt,
+		name,
+		status,
+		login_name,
+		role_id,
+		store_id
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{password},
+		#{salt},
+		#{name},
+		#{status},
+		#{loginName},
+		#{roleId},
+		#{storeId}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id} AND id!=1
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.system.SystemUser">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			login_name = #{loginName},
+			password = #{password},
+			salt = #{salt},
+			name = #{name},
+			status = #{status},
+			role_id = #{roleId},
+			store_id = #{storeId}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

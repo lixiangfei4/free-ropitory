@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.store.StoreDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.store.Store" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="name" property="name" />
+		<result column="city" property="city"  />
+		<result column="province" property="province"  />
+		<result column="area" property="area"  />
+		<result column="image" property="image"  />
+		<result column="longitude" property="longitude"  />
+		<result column="latitude" property="latitude"  />
+		<result column="address" property="address"  />
+		<result column="phone" property="phone"  />
+		<result column="business" property="business"  />
+		<result column="score" property="score"  />
+		<result column="contact_name" property="contactName"  />
+		<result column="contact_phone" property="contactPhone"  />
+	</resultMap>
+
+	<resultMap id="storeBeanMap" extends="beanMap" type="com.ixinhoo.shopping.entity.store.Store" >
+		<collection property="banners"
+					ofType="com.ixinhoo.shopping.entity.store.StoreBanner"
+					javaType="list" resultMap="bannerBeanMap">
+		</collection>
+	</resultMap>
+
+	<resultMap id="bannerBeanMap" type="com.ixinhoo.shopping.entity.store.StoreBanner" >
+		<id column="bannerId" property="id" />
+		<result column="bannerSort" property="sort" />
+		<result column="bannerAddress" property="address"  />
+		<result column="storeId" property="storeId"  />
+	</resultMap>
+
+
+	<sql id="table_name">store</sql>
+
+	<sql id="banner_table_name">store_banner</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		name,
+		city,
+		province,
+		area,
+		image,
+		longitude,
+		latitude,
+		address,
+		phone,
+		business,
+		score,
+		contact_name,
+		contact_phone
+	</sql>
+
+	<sql id="banner_base_column_list" >
+		a.id ,
+		a.name,
+		a.city,
+		a.province,
+		a.area,
+		a.image,
+		a.longitude,
+		a.latitude,
+		a.address,
+		a.phone,
+		a.business,
+		a.score,
+		a.contact_name,
+		a.contact_phone,
+		b.id AS bannerId,
+		b.store_id AS storeId,
+		b.sort AS bannerSort,
+		b.address AS bannerAddress
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name != null and name !=''"> AND name = #{name}</if>
+				<!-- 模糊查询 -->
+				<if test="nameLike != null and nameLike!=''">AND name LIKE CONCAT("%",#{nameLike},"%")</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="selectStoreByDistance" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" /> , (
+		2 * 6378.137 * ASIN(
+		SQRT(
+		POW(
+		SIN(
+		PI() * (#{latitude} - latitude) / 360
+		),
+		2
+		) + COS(PI() * #{longitude} / 180) * COS(latitude * PI() / 180) * POW(
+		SIN(
+		PI() * (#{longitude} - longitude) / 360
+		),
+		2
+		)
+		)
+		)
+		) AS distance
+		FROM <include refid="table_name" />
+		<where>
+			<trim prefixOverrides="and">
+				<if test="province != null and province!=''">AND province = #{province}</if>
+				<if test="city != null and city!=''">AND city = #{city}</if>
+				<if test="nameLike != null and nameLike!=''">AND name LIKE CONCAT("%",#{nameLike},"%")</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY distance ${ccSort}
+		</if>
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</select>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="findStoreAndBannerById" resultMap="storeBeanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="banner_base_column_list" />
+		FROM <include refid="table_name" /> AS a LEFT JOIN <include refid="banner_table_name" /> AS b
+		ON a.id = b.store_id
+		<where>
+			a.id =${id} ORDER BY b.sort ASC
+		</where>
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.ixinhoo.shopping.entity.store.Store">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		name,
+		city,
+		province,
+		area,
+		image,
+		longitude,
+		latitude,
+		address,
+		phone,
+		business,
+		score,
+		contact_name,
+		contact_phone
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{name},
+		#{city},
+		#{province},
+		#{area},
+		#{image},
+		#{longitude},
+		#{latitude},
+		#{address},
+		#{phone},
+		#{business},
+		#{score},
+		#{contactName},
+		#{contactPhone}
+		)
+	</insert>
+
+	<insert id="insertBanner" parameterType="com.ixinhoo.shopping.entity.store.StoreBanner">
+		INSERT INTO <include refid="banner_table_name" />(
+		id,
+		address,
+		store_id,
+		sort
+		)
+		VALUES (
+		#{id},
+		#{address},
+		#{storeId},
+		#{sort}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+
+	<delete id="deleteBannerByStoreId" >
+		DELETE FROM <include refid="banner_table_name" />
+		<where>
+			store_id = #{storeId}
+		</where>
+	</delete>
+
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.store.Store">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			name = #{name},
+			city = #{city},
+			area = #{area},
+			province = #{province},
+			image = #{image},
+			longitude = #{longitude},
+			latitude = #{latitude},
+			address = #{address},
+			phone = #{phone},
+			score = #{score},
+			contact_name = #{contactName},
+			contact_phone = #{contactPhone},
+			business = #{business}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

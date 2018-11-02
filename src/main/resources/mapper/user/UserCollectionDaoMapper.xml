@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.user.UserCollectionDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.user.UserCollection" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="data_id" property="dataId" />
+		<result column="type" property="type" />
+		<result column="user_id" property="userId"  />
+		<result column="time" property="time" />
+	</resultMap>
+
+	<sql id="table_name">user_collection</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		data_id,
+		user_id ,
+		time,
+		type
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null and userId !='' ">AND user_id = #{userId}</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY  ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT COUNT(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+	<select id="selectByUserId" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			user_id = #{userId} AND type=#{type} ORDER BY time DESC
+			<if test="ccStart != null and ccEnd != null">
+				LIMIT #{ccStart}, #{ccEnd}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectByUserIdAndDataIdAndType" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			user_id = #{userId} AND data_id=#{dataId} AND type=#{type}
+		</where>
+	</select>
+
+	<delete id="deleteByUserIdAndDataIdAndType" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			user_id = #{userId} AND data_id=#{dataId} AND type=#{type}
+		</where>
+	</delete>
+
+
+	<insert id="insert"  parameterType="com.ixinhoo.shopping.entity.user.UserCollection">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		time,
+		user_id ,
+		type,
+		data_id
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{time},
+		#{userId},
+		#{type},
+		#{dataId}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.user.UserCollection">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			data_id = #{dataId},
+			type = #{type},
+			time = #{time},
+			user_id = #{userId}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

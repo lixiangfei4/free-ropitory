@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.order.UserOrderAddressDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.order.UserOrderAddress" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="order_id" property="orderId"  />
+		<result column="order_num" property="orderNum"  />
+		<result column="user_id" property="userId" />
+		<result column="province" property="province"  />
+		<result column="city" property="city"  />
+		<result column="area" property="area"  />
+		<result column="address" property="address"  />
+		<result column="post_code" property="postCode"  />
+		<result column="name" property="name"  />
+		<result column="phone" property="phone"  />
+
+	</resultMap>
+
+	<sql id="table_name">user_order_address</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		order_id,
+		order_num,
+		province ,
+		city ,
+		area ,
+		address ,
+		post_code ,
+		name ,
+		phone
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="AND">
+				<if test="orderId != null and orderId!='' "> AND order_id = #{orderId}</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null and ccEnd != 0">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+	<select id="selectByOrderIds" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			order_id IN <foreach collection="ids" item="id" open="(" separator="," close=")"> #{id} </foreach>
+		</where>
+	</select>
+
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.ixinhoo.shopping.entity.order.UserOrderAddress">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		order_id,
+		order_num,
+		province ,
+		city ,
+		area ,
+		address ,
+		post_code ,
+		name ,
+		phone
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{orderId},
+		#{orderNum},
+		#{province},
+		#{city},
+		#{area},
+		#{address},
+		#{postCode},
+		#{name},
+		#{phone}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.order.UserOrderAddress">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			order_id = #{orderId},
+			order_num = #{orderNum},
+			province = #{province},
+			city = #{city},
+			area = #{area},
+			address = #{address},
+			post_code = #{postCode},
+			name = #{name},
+			phone = #{phone}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

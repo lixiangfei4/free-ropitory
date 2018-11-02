@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.order.UserOrderDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.order.UserOrder" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="user_id" property="userId" />
+		<result column="buy_type" property="buyType"  />
+		<result column="address_id" property="addressId"  />
+		<result column="order_num" property="orderNum"  />
+		<result column="order_price" property="orderPrice"  />
+		<result column="order_integral" property="orderIntegral"  />
+		<result column="order_status" property="orderStatus"  />
+		<result column="evaluated" property="evaluated"  />
+		<result column="product_num" property="productNum"  />
+		<result column="order_time" property="orderTime"  />
+		<result column="cancel_time" property="cancelTime"  />
+		<result column="close_time" property="closeTime"  />
+		<result column="take_time" property="takeTime"  />
+
+	</resultMap>
+
+	<sql id="table_name">user_order</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		user_id,
+		buy_type ,
+		address_id,
+		order_num,
+		order_price,
+		order_integral,
+		order_status,
+		evaluated,
+		product_num,
+		order_time,
+		cancel_time,
+		close_time,
+		take_time
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="where_clause">
+		<where>
+			<trim prefixOverrides="AND">
+				<if test="userId != null and userId!='' "> AND user_id = #{userId}</if>
+				<if test="addressId != null and addressId!='' "> AND address_id = #{addressId}</if>
+				<if test="orderStatus != null and orderStatus!='' "> AND order_status = #{orderStatus}</if>
+			</trim>
+		</where>
+	</sql>
+
+
+	<sql id="base_where_clause">
+		<include refid="where_clause" />
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null and ccEnd != 0">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT COUNT(id)
+		FROM <include refid="table_name" />
+		<include refid="where_clause" />
+	</select>
+
+	<select id="selectCountByAddressIdAndStatusAndType" resultType="java.lang.Long" >
+		SELECT COUNT(id)
+		FROM <include refid="table_name" />
+		<where>
+			address_id=#{addressId} AND order_status=#{orderStatus}
+			AND buy_type=#{buyType}
+		</where>
+	</select>
+
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+
+	<insert id="insert" parameterType="com.ixinhoo.shopping.entity.order.UserOrder">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		user_id,
+		buy_type ,
+		address_id,
+		order_num,
+		order_price,
+		order_integral,
+		order_status,
+		evaluated,
+		product_num,
+		order_time,
+		cancel_time,
+		close_time,
+		take_time
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{userId},
+		#{buyType},
+		#{addressId},
+		#{orderNum},
+		#{orderPrice},
+		#{orderIntegral},
+		#{orderStatus},
+		#{evaluated},
+		#{productNum},
+		#{orderTime},
+		#{cancelTime},
+		#{closeTime},
+		#{takeTime}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.order.UserOrder">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			user_id = #{userId},
+			buy_type = #{buyType},
+			address_id = #{addressId},
+			order_num = #{orderNum},
+			order_price = #{orderPrice},
+			order_integral = #{orderIntegral},
+			order_status = #{orderStatus},
+			evaluated = #{evaluated},
+			product_num = #{productNum},
+			order_time = #{orderTime},
+			cancel_time = #{cancelTime},
+			close_time = #{closeTime},
+			take_time = #{takeTime}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

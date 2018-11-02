@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.setting.GradeSettingDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.setting.GradeSetting" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="name" property="name" />
+		<result column="end_integral" property="endIntegral"  />
+		<result column="begin_integral" property="beginIntegral"  />
+		<result column="remark" property="remark" />
+
+	</resultMap>
+
+	<sql id="table_name">grade_setting</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		name,
+		remark ,
+		begin_integral,
+		end_integral
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="AND">
+				<if test="name != null and name !=''"> AND name = #{name}</if>
+			</trim>
+		</where>
+		<if test="ccSort != null and ccSort != ''">
+			ORDER BY ${ccField} ${ccSort}
+		</if>
+
+	</sql>
+
+	<sql id="base_where_clause_limit">
+		<include refid="base_where_clause" />
+		<if test="ccStart != null and ccEnd != null and ccEnd != 0">
+			LIMIT #{ccStart}, #{ccEnd}
+		</if>
+	</sql>
+
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause_limit" />
+	</select>
+
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+	<select id="selectByIntegral" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			<![CDATA[
+			begin_integral<=#{integral} AND #{integral}<end_integral
+			 ]]>
+		</where>
+	</select>
+
+
+	<insert id="insert" parameterType="com.ixinhoo.shopping.entity.setting.GradeSetting">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		name,
+		remark ,
+		end_integral ,
+		begin_integral
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{name},
+		#{remark},
+		#{endIntegral},
+		#{beginIntegral}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+	<update id="updateById" parameterType="com.ixinhoo.shopping.entity.setting.GradeSetting">
+		UPDATE <include refid="table_name" />
+		<set>
+			update_id = #{updateId},
+			update_time = #{updateTime},
+			name = #{name},
+			remark = #{remark},
+			begin_integral = #{beginIntegral},
+			end_integral = #{endIntegral}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+
+
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ixinhoo.shopping.dao.system.SystemRoleDao">
+
+    <resultMap id="beanMap" type="com.ixinhoo.shopping.entity.system.SystemRole" extends="com.ixinhoo.api.entity.AuditEntity" >
+		<result column="name" property="name" />
+		<result column="code" property="code" />
+		<result column="description" property="description" />
+		<result column="status" property="status" />
+    </resultMap>
+
+	<sql id="table_name">system_role</sql>
+
+	<!--集合显示的属性-->
+	<sql id="base_column_list">
+		id ,
+		name ,
+		code,
+		description,
+		status
+	</sql>
+
+	<!-- 基本的查询条件-->
+	<sql id="base_where_clause">
+		<where>
+			<trim prefixOverrides="and">
+				<if test="status != null and status !=''"> and status = #{status}</if>
+
+			</trim>
+		</where>
+	</sql>
+	<select id="select" resultMap="beanMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+	<select id="selectCount" resultType="java.lang.Long" parameterType="java.util.Map">
+		SELECT count(id)
+		FROM <include refid="table_name" />
+		<include refid="base_where_clause" />
+	</select>
+
+	<insert id="insert" parameterType="com.ixinhoo.shopping.entity.system.SystemRole">
+		INSERT INTO <include refid="table_name" />(
+		id,
+		create_id,
+		create_time,
+		update_id,
+		update_time,
+		code,
+		description,
+		name,
+		status
+		)
+		VALUES (
+		#{id},
+		#{createId},
+		#{createTime},
+		#{updateId},
+		#{updateTime},
+		#{code},
+		#{description},
+		#{name},
+		#{status}
+		)
+	</insert>
+
+	<delete id="deleteById" >
+		DELETE FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</delete>
+
+
+	<select id="selectById" resultMap="beanMap" >
+		SELECT
+		<include refid="base_column_list" />
+		FROM <include refid="table_name" />
+		<where>
+			id = #{id}
+		</where>
+	</select>
+
+</mapper>

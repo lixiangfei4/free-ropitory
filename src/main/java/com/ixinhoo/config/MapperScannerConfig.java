@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import tk.mybatis.spring.mapper.MapperScannerConfigurer;
-
+//这是一个注释
 @Configuration
 public class MapperScannerConfig {
 

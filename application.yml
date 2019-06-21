@@ -2,14 +2,12 @@
   profiles:
     active:
      - dev
-
-- - -
+---
 spring:
   profiles: dev
   application:
     name: portal-dev
-
-- - -
+---
 spring:
   profiles: test
   application:

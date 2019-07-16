@@ -1,14 +1,79 @@
-﻿spring:
+﻿server:
+  port: 8082
+#  context-path: /member
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://zx:zx@localhost:8761/eureka/
+  instance:
+    instance-id: tifree-order
+    prefer-ip-address: true
+#  server:
+#    enable-self-preservation: false  自我保护机制，建议保留
+
+feign:
+  hystrix:
+    enabled: true
+
+info:
+  app.name: portal-biz
+  company.name: learnleader.com 蓝鹰立德
+  build.artifactId: $project.artifactId$
+  build.version: $project.version$
+
+spring:
+  application:
+    name: order
   profiles:
-    active:
-     - dev
----
-spring:
-  profiles: dev
-  application:
-    name: portal-dev
----
-spring:
-  profiles: test
-  application:
-    name: portal-test
+    active: dev
+  datasource:
+      url: jdbc:mysql://139.219.239.76:3306/test2?serverTimezone=CTT&useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: cfg
+      password: Cfg@123
+      driver-class-name: com.mysql.jdbc.Driver
+  #    driver-class-name: oracle.jdbc.driver.OracleDriver
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initialSize: 1
+      minIdle: 3
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 30000
+      #validationQuery: select 'x'
+      testWhileIdle: false
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+  main:
+      allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+  zipkin:
+    base-url: http://139.219.233.114:9411 #代表字zipkin服务器地址
+  sleuth:
+    sampler:
+      percentage: 1.0
+mybatis-plus:
+    mapper-locations: classpath:mappers/*.xml
+  #实体扫描，多个package用逗号或者分号隔离
+    typeAliasesPackage: com.biz.entity
+    global-config:
+      #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+      id-type: 0
+      #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+      field-strategy: 1
+      #驼峰下划线转换
+      db-column-underline: true
+      #刷新mapper 调试神器
+      #refresh-mapper: true
+      #数据库大写下划线转换
+      capital-mode: true
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: false
+      #配置JdbcTypeForNull
+      jdbc-type-for-null: 'null'

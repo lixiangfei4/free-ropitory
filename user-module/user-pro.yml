@@ -9,6 +9,6 @@ eureka:
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
 spring:
-  profiles: dev
+  profiles: pro
   application:
     name: cowork-eureka-pro

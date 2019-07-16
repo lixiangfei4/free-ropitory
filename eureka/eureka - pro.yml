@@ -10,13 +10,13 @@ eureka:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
 spring:
   profiles:
-    active:
-     - dev
----
-spring:
-  profiles: dev
-  application:
-    name: cowork-eureka-dev
+    active: pro
+  security:
+    basic:
+      enabled: true
+    user:
+      name: zx
+      password: zx
 
 
 

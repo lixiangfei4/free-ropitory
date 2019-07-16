@@ -18,15 +18,5 @@ spring:
   application:
     name: cowork-eureka-dev
 
----
-spring:
-  profiles: test
-  application:
-    name: cowork-eureka-test
 
----
-spring:
-profiles: prod
-application:
-  name: cowork-eureka-pro
 

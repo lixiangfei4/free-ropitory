@@ -6,7 +6,7 @@ eureka:
     serviceUrl:
       defaultZone: http://zx:zx@139.219.233.114:8761/eureka/
   instance:
-    instance-id: cowork-order-8082
+    instance-id: organization-8082-pro
     prefer-ip-address: true
 #  server:
 #    enable-self-preservation: false  自我保护机制，建议保留
@@ -16,17 +16,17 @@ feign:
     enabled: true
 
 info:
-  app.name: cowork-order
-  company.name: bzsns.cn
+  app.name: organization-module
+  company.name: basns.cn
   build.artifactId: $project.artifactId$
   build.version: $project.version$
 
 spring:
   profiles: pro
   application:
-    name: cowork-order
+    name: cowork-organization
   datasource:
-      url: jdbc:mysql://139.219.239.76:3306/test2?serverTimezone=CTT&useUnicode=true&characterEncoding=utf-8&useSSL=false
+      url: jdbc:mysql://139.219.239.76:3306/fyj_new?serverTimezone=CTT&useUnicode=true&characterEncoding=utf-8&useSSL=false
       username: cfg
       password: Cfg@123
       driver-class-name: com.mysql.jdbc.Driver
@@ -56,6 +56,3 @@ spring:
   sleuth:
     sampler:
       percentage: 1.0
-
-
-

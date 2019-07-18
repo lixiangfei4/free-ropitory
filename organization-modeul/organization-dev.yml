@@ -1,12 +1,12 @@
 ﻿server:
-  port: 8082
+  port: 8090
 #  context-path: /member
 eureka:
   client:
     serviceUrl:
       defaultZone: http://zx:zx@139.219.233.114:8761/eureka/
   instance:
-    instance-id: organization-8082-dev
+    instance-id: organization-8090-dev
     prefer-ip-address: true
 #  server:
 #    enable-self-preservation: false  自我保护机制，建议保留

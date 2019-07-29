@@ -1,0 +1,61 @@
+﻿server:
+  port: 6000
+#  context-path: /member
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://zx:zx@139.219.233.114:8761/eureka/
+  instance:
+    instance-id: cowork-message
+    prefer-ip-address: true
+#  server:
+#    enable-self-preservation: false  自我保护机制，建议保留
+
+feign:
+  hystrix:
+    enabled: true
+
+info:
+  app.name: cowork-message
+  company.name: bzsns.cn
+  build.artifactId: $project.artifactId$
+  build.version: $project.version$
+
+spring:
+  profiles: pro
+  application:
+    name: cowork-message
+  datasource:
+      url: jdbc:mysql://139.219.239.76:3306/test2?serverTimezone=CTT&useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: cfg
+      password: Cfg@123
+      driver-class-name: com.mysql.jdbc.Driver
+  #    driver-class-name: oracle.jdbc.driver.OracleDriver
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initialSize: 1
+      minIdle: 3
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 30000
+      #validationQuery: select 'x'
+      testWhileIdle: false
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+  main:
+      allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+  zipkin:
+    base-url: http://139.219.233.114:9411 #代表字zipkin服务器地址
+  sleuth:
+    sampler:
+      percentage: 1.0
+
+
+

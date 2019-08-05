@@ -4,7 +4,7 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://zx:zx@139.219.233.114:8761/eureka/
+      defaultZone: http://zx:zx@40.72.153.95:8761/eureka/
   instance:
     instance-id: cowork-message
     prefer-ip-address: true

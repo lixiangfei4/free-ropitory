@@ -1,6 +1,10 @@
 ﻿server:
   port: 8769
 #  context-path: /member
+username:
+  test
+password:
+  test
 eureka:
   client:
     serviceUrl:
